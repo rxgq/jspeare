@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -42,6 +44,7 @@ int main(int argc, char *argv[]) {
     }
 
     Token* tokens = tokenize(buff);
+    parse_ast(tokens);
 
     fclose(fptr);
     free(buff);

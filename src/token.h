@@ -92,6 +92,7 @@ typedef enum TokenType {
     NUMBER,
     STRING,
     UNKNOWN,
+    EOF_TOKEN,
 } TokenType;
 
 typedef struct Token {

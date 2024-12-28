@@ -11,6 +11,6 @@ typedef struct Lexer {
     int current;
 } Lexer;
 
-Token *tokenize(char *source);
+extern Token *tokenize(char *source);
 
 #endif
