@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
 
-objects = src/lexer.o src/main.o src/parser.o
-headers = src/lexer.h src/token.h src/parser.h
+objects = src/lexer.o src/main.o src/parser.o src/translator.o
+headers = src/lexer.h src/token.h src/parser.h src/translator.h
 
 all: program
 

@@ -281,8 +281,10 @@ Token *tokenize(char *source) {
         if (!is_end(lexer)) advance(lexer);
     }
 
+    create_token(lexer, EOF_TOKEN, "");
+
     // for (int i = 0; i < lexer->token_count; i++) {
-    //     printf("\nToken: %s | %d", lexer->tokens[i].lexeme, lexer->tokens[i].type);
+    //     printf("Token: %s | %d\n", lexer->tokens[i].lexeme, lexer->tokens[i].type);
     // }
 
     return lexer->tokens;

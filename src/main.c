@@ -4,6 +4,7 @@
 
 #include "lexer.h"
 #include "parser.h"
+#include "translator.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -44,7 +45,9 @@ int main(int argc, char *argv[]) {
     }
 
     Token* tokens = tokenize(buff);
-    parse_ast(tokens);
+    Ast *ast = parse_ast(tokens);
+
+    to_shakespearean(ast);
 
     fclose(fptr);
     free(buff);
