@@ -11,6 +11,7 @@ typedef struct BinaryExpr {
 
 typedef struct VarDeclExpr {
     char *name;
+    char *declarator;
     Expr *expr;
 } VarDeclExpr;
 
@@ -36,6 +37,7 @@ typedef struct Expr {
 
 typedef struct Ast {
     int expr_count;
+    int expr_capacity;
     Expr *body;
 } Ast;
 

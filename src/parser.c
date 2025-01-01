@@ -12,15 +12,15 @@ static Parser *init_parser(Token *tokens) {
     return parser;
 }
 
-static void advance(Parser *parser) {
+static inline Token current(Parser *parser) {
+    return parser->tokens[parser->current];
+}
+
+static inline void advance(Parser *parser) {
     parser->current++;
 }
 
-// static int match(Parser *parser, TokenType type) {
-
-// }
-
-static Expr *create_expr(Parser *parser, ExprType type) {
+static Expr *create_expr(ExprType type) {
     Expr *expr = malloc(sizeof(Expr));
     expr->type = type;
 
@@ -28,11 +28,10 @@ static Expr *create_expr(Parser *parser, ExprType type) {
 }
 
 static Expr *parse_primary(Parser *parser) {
-    Token token = parser->tokens[parser->current];
+    Token token = current(parser);
 
     if (token.type == NUMBER || token.type == STRING) {
-        Expr *expr = malloc(sizeof(Expr));
-        expr->type = EXPR_LITERAL;
+        Expr *expr = create_expr(EXPR_LITERAL);
         expr->as.literalExpr.value = token;
         return expr;
     } 
@@ -43,15 +42,16 @@ static Expr *parse_primary(Parser *parser) {
 }
 
 
-static Expr *parse_variable_declaration(Parser *parser, TokenType type) {
-    Expr *expr = malloc(sizeof(Expr));
-    expr->type = EXPR_VAR_DECL;
+static Expr *parse_variable_declaration(Parser *parser) {
+    Expr *expr = create_expr(EXPR_VAR_DECL);
 
-    advance(parser); // let, var, etc
+    Token declarator = current(parser);
+    expr->as.varDeclExpr.declarator = strdup(declarator.lexeme);
+    advance(parser);
 
-    Token identifier = parser->tokens[parser->current];
+    Token identifier = current(parser);
     expr->as.varDeclExpr.name = strdup(identifier.lexeme);
-    advance(parser); // x
+    advance(parser);
 
     advance(parser); // =
 
@@ -62,10 +62,10 @@ static Expr *parse_variable_declaration(Parser *parser, TokenType type) {
 }
 
 static Expr *parse_token(Parser *parser) {
-    TokenType type = parser->tokens[parser->current].type;
+    TokenType type = current(parser).type;
 
     if (type == LET || type == VAR || type == CONST) {
-        return parse_variable_declaration(parser, type);
+        return parse_variable_declaration(parser);
     } else {
         return parse_primary(parser);
     }
@@ -77,7 +77,7 @@ static void print_expr(Expr *expr) {
             printf("Literal: %s\n", expr->as.literalExpr.value.lexeme);
             break;
         case EXPR_VAR_DECL:
-            printf("Variable Declaration: %s", expr->as.varDeclExpr.name);
+            printf("Variable Declaration: %s %s", expr->as.varDeclExpr.declarator, expr->as.varDeclExpr.name);
             if (expr->as.varDeclExpr.expr) {
                 printf(" = ");
                 print_expr(expr->as.varDeclExpr.expr);
@@ -90,22 +90,33 @@ static void print_expr(Expr *expr) {
     }
 }
 
-Ast *parse_ast(Token *tokens) {
-    Parser *parser = init_parser(tokens);
-
+Ast *init_ast() {
     Ast *ast = (Ast *)malloc(sizeof(Ast));
     ast->body = malloc(sizeof(Expr) * 2);
+    ast->expr_count = 0;
+    ast->expr_capacity = 2;
 
-    int expr_count = 0;
-    while (parser->tokens[parser->current].type != EOF_TOKEN) {
+    return ast;
+}
+
+Ast *parse_ast(Token *tokens) {
+    Parser *parser = init_parser(tokens);
+    Ast *ast = init_ast();
+
+    while (current(parser).type != EOF_TOKEN) {
         Expr *expr = parse_token(parser);
 
-        ast->body[expr_count++] = *expr;
+        if (ast->expr_count >= ast->expr_capacity) {
+            ast->expr_capacity *= 2;
+            ast->body = realloc(ast->body, sizeof(Expr) * ast->expr_capacity);
+        }
+
+        ast->body[ast->expr_count++] = *expr;
         advance(parser);
     }
 
     printf("Parsed Expressions:\n");
-    for (int i = 0; i < expr_count; i++) {
+    for (int i = 0; i < ast->expr_count; i++) {
         print_expr(&ast->body[i]);
     }
 

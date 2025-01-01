@@ -1,0 +1,6 @@
+Lo! Be it known that the mutable variable x shall be assigned to 10
+Hark! Let it be proclaimed that the immutable variable y shall be bound to "asd"
+Lo! Be it known that the mutable variable x shall be assigned to 10
+Hark! Let it be proclaimed that the immutable variable y shall be bound to "asd"
+Lo! Be it known that the mutable variable x shall be assigned to 10
+Hark! Let it be proclaimed that the immutable variable y shall be bound to "asd"
